@@ -3,6 +3,8 @@ package com.eugineer.service.tax.impl;
 import com.eugineer.domain.TaxInfoEntity;
 import com.eugineer.dto.tax.CreateTaxDTO;
 import com.eugineer.dto.tax.TaxResponseDTO;
+import com.eugineer.exception.EntityNotFoundException;
+import com.eugineer.localization.Localization;
 import com.eugineer.model.ReportPeriods;
 import com.eugineer.repository.TaxRepository;
 import com.eugineer.service.tax.TaxCalcService;
@@ -11,22 +13,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
 @Service
-//@Transactional
+@Transactional
 public class TaxCalcServiceImpl implements TaxCalcService {
 
     private final TaxRepository repository;
+    private final Localization messages;
 
     @Autowired
-    public TaxCalcServiceImpl ( TaxRepository repository) {
+    public TaxCalcServiceImpl ( TaxRepository repository, Localization messages ) {
         this.repository = repository;
+        this.messages = messages;
     }
 
     @Override
-    public Page<TaxResponseDTO> getAll (int page, int size) {
+    @Transactional(readOnly = true)
+    public Page<TaxResponseDTO> findAll ( int page, int size) {
         Page<TaxInfoEntity> allTaxes = repository.findAll(PageRequest.of( page, size ));
         return new PageImpl<>(
                 allTaxes.stream().map(TaxResponseDTO::new).collect(Collectors.toList()),
@@ -36,7 +42,12 @@ public class TaxCalcServiceImpl implements TaxCalcService {
     }
 
     @Override
-    public TaxResponseDTO getById ( Long id ) {
+    @Transactional(readOnly = true)
+    public TaxResponseDTO findById ( Long id ) {
+        if (!repository.existsById( id )) {
+            throw new EntityNotFoundException( messages.TaxInfoNotFound() );
+        }
+
         return new TaxResponseDTO( repository.findById( id ).get() );
     }
 
@@ -63,8 +74,6 @@ public class TaxCalcServiceImpl implements TaxCalcService {
     }
 
     private double getTaxAmount(CreateTaxDTO dto) {
-
-        //TODO repair translation?
         ReportPeriods _1period = dto.getPeriod();
 
         double _2income = dto.getIncome();

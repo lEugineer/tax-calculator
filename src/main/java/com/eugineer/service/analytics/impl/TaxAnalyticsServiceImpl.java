@@ -1,41 +1,51 @@
 package com.eugineer.service.analytics.impl;
 
+import com.eugineer.domain.TaxInfoEntity;
+import com.eugineer.dto.tax.TaxFilterDTO;
 import com.eugineer.dto.tax.TaxResponseDTO;
-import com.eugineer.exception.EntityNotFoundException;
-import com.eugineer.localization.Localization;
 import com.eugineer.repository.TaxRepository;
 import com.eugineer.service.analytics.TaxAnalyticsService;
+import com.eugineer.service.tax.TaxCalcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class TaxAnalyticsServiceImpl implements TaxAnalyticsService {
 
     @Autowired
     private TaxRepository repository;
     @Autowired
-    private Localization messages;
+    private TaxCalcService taxCalcService;
 
     @Override
-    public Page<TaxResponseDTO> getAll ( int page, int size) {
-        return new PageImpl<>(
-            repository.findAll( PageRequest.of( page, size ))
-                .stream()
-                .map( TaxResponseDTO::new )
-                .collect( Collectors.toList())
-        );
+    @Transactional(readOnly = true)
+    public Page<TaxResponseDTO> findAll ( int page, int size) {
+        return taxCalcService.findAll( page, size );
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TaxResponseDTO findById ( Long id ) {
-        if (!repository.existsById( id )) {
-            throw new EntityNotFoundException( messages.TaxInfoNotFound() );
-        }
-        return new TaxResponseDTO( repository.findById( id ).get() );
+        return taxCalcService.findById( id );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TaxResponseDTO> filter ( TaxFilterDTO dto, int page, int size ) {
+        Page<TaxInfoEntity> filtered = repository.filter( dto, page, size );
+        return new PageImpl<>(
+                filtered
+                    .stream()
+                    .map( TaxResponseDTO::new )
+                    .collect( Collectors.toList()),
+                filtered.getPageable(),
+                filtered.getTotalElements()
+        );
     }
 }

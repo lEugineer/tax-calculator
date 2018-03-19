@@ -63,4 +63,72 @@ public class TaxResponseDTO {
         outcomeSumForIndividualBusiness = tax.getOutcomeSumForIndividualBusiness();
         taxToPay = tax.getTaxToPay();
     }
+
+    public long getId () {
+        return id;
+    }
+
+    public LocalDateTime getCreatedAt () {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt () {
+        return updatedAt;
+    }
+
+    public ReportPeriods getPeriod () {
+        return period;
+    }
+
+    public double getIncome () {
+        return income;
+    }
+
+    public double getOutOfRealizedIncomeWithoutVat () {
+        return outOfRealizedIncomeWithoutVat;
+    }
+
+    public boolean isHasMainWork () {
+        return isHasMainWork;
+    }
+
+    public boolean isBenefitPermitted () {
+        return isBenefitPermitted;
+    }
+
+    public boolean isHasBenefitForSingle () {
+        return hasBenefitForSingle;
+    }
+
+    public int getChildrenYounger18 () {
+        return childrenYounger18;
+    }
+
+    public int getDisabledChildren () {
+        return disabledChildren;
+    }
+
+    public int getDependants () {
+        return dependants;
+    }
+
+    public double getOutcomeSumForInsurance () {
+        return outcomeSumForInsurance;
+    }
+
+    public double getOutcomeSumForEducation () {
+        return outcomeSumForEducation;
+    }
+
+    public double getOutcomeSumForBuilding () {
+        return outcomeSumForBuilding;
+    }
+
+    public double getOutcomeSumForIndividualBusiness () {
+        return outcomeSumForIndividualBusiness;
+    }
+
+    public double getTaxToPay () {
+        return taxToPay;
+    }
 }
