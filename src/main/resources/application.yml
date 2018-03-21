@@ -4,19 +4,12 @@ spring:
     password: root
     url: jdbc:mysql://localhost:3306/tax_calculator_service?characterEncoding=UTF-8&useSSL=false
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: none
     properties.hibernate:
       dialect: org.hibernate.dialect.MySQL5Dialect
 
-      format_sql: true
-    show-sql: true
-
-
-#db:
-#  username: root
-#  password: root
-#  driver: com.mysql.jdbc.Driver
-#  url: jdbc:mysql://localhost:3306/online_player?characterEncoding=UTF-8
+#      format_sql: true
+#    show-sql: true
 
 server:
   port: 8080
